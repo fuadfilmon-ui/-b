@@ -1,84 +1,54 @@
-<!DOCTYPE html>
-<html lang="am">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>የካርታ ጨዋታ ጠረጴዛ</title>
-    <style>
-        body {
-            background-color: #2c3e50;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
+// 1. ካርታዎቹን መፍጠር (104 ካርታዎች)
+const suits = ['♥', '♦', '♣', '♠'];
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+let deck = [];
+
+function createDeck() {
+    deck = [];
+    for (let i = 0; i < 2; i++) { // 2 ሙሉ ዴክ
+        for (let suit of suits) {
+            for (let rank of ranks) {
+                deck.push({ rank, suit, id: `${i}-${rank}-${suit}` });
+            }
         }
+        // ለእያንዳንዱ ዴክ 2 ጆከር (በጠቅላላ 4)
+        deck.push({ rank: 'Joker', suit: '🃏', id: `joker-${i}a` });
+        deck.push({ rank: 'Joker', suit: '🃏', id: `joker-${i}b` });
+    }
+}
 
-        /* የካርታ ጠረጴዛው */
-        .game-table {
-            width: 90%;
-            max-width: 600px;
-            height: 400px;
-            background-color: #27ae60; /* አረንጓዴ ቀለም */
-            border: 10px solid #7f8c8d;
-            border-radius: 150px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
+// 2. ካርታዎቹን መደባለቅ (Shuffle)
+function shuffleDeck() {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
 
-        /* የካርታዎች መያዣ */
-        .card-area {
-            display: flex;
-            gap: 10px;
-        }
+// 3. ካርታዎቹን ማከፋፈል
+let playersHands = [[], [], [], [], []]; // 5 ተጫዋቾች
+let remainingDeck = [];
 
-        /* የአንድ ካርታ ዲዛይን */
-        .card {
-            width: 60px;
-            height: 90px;
-            background-color: white;
-            border-radius: 5px;
-            border: 2px solid #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-        }
+function dealCards() {
+    createDeck();
+    shuffleDeck();
 
-        .red { color: red; }
-        .black { color: black; }
-
-        .status-text {
-            color: white;
-            font-size: 1.2rem;
-            text-shadow: 1px 1px 2px black;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="game-table">
-        <div class="status-text">የኮምፒውተሩ ካርታዎች</div>
+    // ለአምስቱ ተጫዋቾች ማከፋፈል
+    for (let i = 0; i < 5; i++) {
+        // የመጀመሪያው ተጫዋች (i=0) 14 ካርታ፣ ሌሎቹ 13
+        let cardsToGive = (i === 0) ? 14 : 13;
         
-        <div class="card-area">
-            <div class="card" style="background-color: #34495e;"></div>
-            <div class="card" style="background-color: #34495e;"></div>
-        </div>
+        for (let j = 0; j < cardsToGive; j++) {
+            playersHands[i].push(deck.pop());
+        }
+    }
 
-        <div class="status-text">የእርስዎ ካርታዎች</div>
+    // የተረፈው ካርታ መሃል ላይ ይቀመጣል
+    remainingDeck = deck;
 
-        <div class="card-area">
-            <div class="card red">A ♥</div>
-            <div class="card black">K ♠</div>
-        </div>
-    </div>
+    console.log("ተጫዋች 1 (14 ካርታ):", playersHands[0]);
+    console.log("ሌሎች ተጫዋቾች (13 ካርታ):", playersHands[1].length);
+    console.log("መሃል የቀረው ካርታ ብዛት:", remainingDeck.length);
+}
 
-</body>
-</html>
+dealCards();
